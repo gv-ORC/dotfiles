@@ -39,7 +39,6 @@
               cmake
               spotify
               slack
-              steam
             ];
           }
           #./git.nix
