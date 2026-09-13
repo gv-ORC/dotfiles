@@ -28,6 +28,7 @@
           {
             environment.systemPackages = with pkgs; [
               git
+              direnv
               vscodium
               sublime-merge
               gtkwave
