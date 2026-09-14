@@ -1,0 +1,512 @@
+{
+	// Place your snippets for systemverilog here. Each snippet is defined under a snippet name and has a prefix, body and 
+	// description. The prefix is what is used to trigger the snippet and the body will be expanded and inserted. Possible variables are:
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. Placeholders with the 
+	// same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+
+	"RAMTemplate": {
+		"prefix": "reg",
+		"body": [
+			"reg  [$1:0] $3 [$2:0];",
+			"wire $3_trigger = clk_en && $4;",
+			"always_ff @(posedge clk) begin",
+			"    if ($3_trigger) begin",
+			"        $3[$5] <= $6;",
+            "    end",
+            "end$0"
+		]
+	},
+
+	"SyncMultiBitReg": {
+		"prefix": "reg",
+		"body": [
+			"reg  [$1:0] $2_current;",
+			"wire [$1:0] $2_next = sync_rst ? $3'd0 : ($4);",
+			"wire        $2_trigger = sync_rst || (clk_en && $5);",
+			"always_ff @(posedge clk) begin",
+			"    if ($2_trigger) begin",
+			"        $2_current <= $2_next;",
+            "    end",
+            "end$0"
+		]
+	},
+
+    "SyncSingleBitReg": {
+		"prefix": "reg",
+		"body": [
+			"reg  $1_current;",
+			"wire $1_next = ~sync_rst && ($2);",
+			"wire $1_trigger = sync_rst || (clk_en && $3);",
+			"always_ff @(posedge clk) begin",
+			"    if ($1_trigger) begin",
+			"        $1_current <= $1_next;",
+            "    end",
+            "end$0"
+		]
+	},
+
+    "ASyncMultiBitReg": {
+        "prefix": "reg",
+        "body": [
+            "reg  [$1:0] $2_current;",
+            "wire [$1:0] $2_next = $4;",
+            "wire        $2_trigger = clk_en && $5;",
+            "always_ff @(posedge clk or posedge async_rst) begin",
+            "    if (async_rst) begin",
+            "        $2_current <= $3'd0;",
+            "    end",
+            "    else if ($2_trigger) begin",
+            "        $2_current <= $2_next;",
+            "    end",
+            "end$0"
+        ]
+    },
+    
+    "ASyncSingleBitReg": {
+        "prefix": "reg",
+        "body": [
+            "reg  $1_current;",
+            "wire $1_next = $2;",
+            "wire $1_trigger = clk_en && $3;",
+            "always_ff @(posedge clk or posedge async_rst) begin",
+            "    if (async_rst) begin",
+            "        $1_current <= 1'b0;",
+            "    end",
+            "    else if ($1_trigger) begin",
+            "        $1_current <= $1_next;",
+            "    end",
+            "end$0"
+        ]
+    },
+
+	"SyncStructReg": {
+		"prefix": "reg",
+		"body": [
+			"$1 $2_current;",
+			"$1 $2_next;",
+            "assign $2_next = sync_rst ? $1'(0) : ($4);",
+			"wire $2_trigger = sync_rst || (clk_en && $5);",
+			"always_ff @(posedge clk) begin",
+			"    if ($2_trigger) begin",
+			"        $2_current <= $2_next;",
+            "    end",
+            "end$0"
+		]
+	},
+
+    "ASyncStructReg": {
+        "prefix": "reg",
+        "body": [
+            "$1 $2_current;",
+            "$1 $2_next",
+            "assign $2_next = $4;",
+            "wire $2_trigger = clk_en && $5;",
+            "always_ff @(posedge clk or posedge async_rst) begin",
+            "    if (async_rst) begin",
+            "        $2_current <= $1'(0);",
+            "    end",
+            "    else if ($2_trigger) begin",
+            "        $2_current <= $2_next;",
+            "    end",
+            "end$0"
+        ]
+    },
+
+	"BlindSingleBitReg": {
+        "prefix": "reg",
+        "body": [
+            "reg  $1_current;",
+            "wire $1_next = $2;",
+            "always_ff @(posedge clk) begin",
+            "    $1_current <= $1_next;",
+            "end$0"
+        ]
+	},
+
+	"BlindMultiBitReg": {
+		"prefix": "reg",
+		"body": [
+			"reg  [$1:0] $2_current;",
+			"wire [$1:0] $2_next = $3;",
+			"always_ff @(posedge clk) begin",
+		    "    $2_current <= $2_next;",
+            "end$0"
+		]
+	},
+
+    "ClkParamModule": {
+		"prefix": "module",
+		"body": [
+            "`include \"hs_macro.sv\"",
+            "module $1 #(",
+            "    parameter $2",
+            ")(",
+            "    input sys_structs::clk_domain clk_dom_i,",
+            "",
+            "    $3",
+            ");",
+            "",
+            "$0",
+            "",
+            "endmodule : $1",
+            ""
+		]
+	},
+
+    "ClkSyncModule": {
+		"prefix": "module",
+		"body": [
+            "`include \"hs_macro.sv\"",
+            "module $1 (",
+            "    input sys_structs::clk_domain clk_dom_i,",
+            "",
+            "    $2",
+            ");",
+            "",
+            "$0",
+            "",
+            "endmodule : $1",
+            ""
+		]
+	},
+
+    "BaseModule": {
+		"prefix": "module",
+		"body": [
+            "`include \"hs_macro.sv\"",
+            "module $1 (",
+            "    $2",
+            ");",
+            "",
+            "$0",
+            "",
+            "endmodule : $1",
+            ""
+		]
+	},
+
+    "extract_clk_domain": {
+        "prefix": "clk",
+        "body": [
+            "wire clk = clk_dom_i.clk;",
+            "wire clk_en = clk_dom_i.clk_en;",
+            "wire sync_rst = clk_dom_i.sync_rst;"
+        ]
+    },
+
+    "create_clk_domain": {
+        "prefix": "clk",
+        "body": [
+            "sys_structs::clk_domain clk_dom;",
+            "assign clk_dom.clk = clk;",
+            "assign clk_dom.clk_en = clk_en;",
+            "assign clk_dom.sync_rst = sync_rst;"
+        ]
+    },
+
+    "Stateful Case": {
+        "prefix": "case",
+        "body": [
+			"logic [$1:0] $2;",
+            "always_comb begin : $2_mux",
+            "    case ($3)",
+            "        2'b00  : $2 = $4;",
+            "        2'b01  : $2 = $5;",
+            "        2'b10  : $2 = $6;",
+            "        2'b11  : $2 = $7;",
+            "        default: $2 = 0;",
+            "    endcase",
+            "end$0"
+        ]
+    },
+
+    "Conditional Sequential Case - ||": {
+        "prefix": "case",
+        "body": [
+			"logic  [$1] $2;",
+            "wire   [1:0] $2_condition;",
+            "assign       $2_condition[0] = ($3) || sync_rst;",
+            "assign       $2_condition[1] = ($4) || sync_rst;",
+            "always_comb begin : $2_mux",
+            "    case ($2_condition)",
+            "        2'b00  : $2 = $5;",
+            "        2'b01  : $2 = $6;",
+            "        2'b10  : $2 = $7;",
+            "        2'b11  : $2 = $8;",
+            "        default: $2 = 0;",
+            "    endcase",
+            "end$0"
+        ]
+    },
+
+    "Conditional Sequential Case - &~": {
+        "prefix": "case",
+        "body": [
+			"logic  [$1] $2;",
+            "wire   [1:0] $2_condition;",
+            "assign       $2_condition[0] = ($3) && ~sync_rst;",
+            "assign       $2_condition[1] = ($4) && ~sync_rst;",
+            "always_comb begin : $2_mux",
+            "    case ($2_condition)",
+            "        2'b00  : $2 = $5;",
+            "        2'b01  : $2 = $6;",
+            "        2'b10  : $2 = $7;",
+            "        2'b11  : $2 = $8;",
+            "        default: $2 = 0;",
+            "    endcase",
+            "end$0"
+        ]
+    },
+
+    "Conditional Combinational Case": {
+        "prefix": "case",
+        "body": [
+			"logic  [$1] $2;",
+            "wire   [1:0] $2_condition;",
+            "assign       $2_condition[0] = $3;",
+            "assign       $2_condition[1] = $4;",
+            "always_comb begin : $2_mux",
+            "    case ($2_condition)",
+            "        2'b00  : $2 = $5;",
+            "        2'b01  : $2 = $6;",
+            "        2'b10  : $2 = $7;",
+            "        2'b11  : $2 = $8;",
+            "        default: $2 = 0;",
+            "    endcase",
+            "end$0"
+        ]
+    },
+    
+    "Handshake Leader Case": {
+        "prefix": "case",
+        "body": [
+            "wire   [1:0] $2_condition;",
+            "assign       $2_condition[0] = $3;",
+            "assign       $2_condition[1] = $4;",
+            "always_comb begin : $2_mux",
+            "    case ($2_condition)",
+            "        2'b00  : $2.lctl = hs::lctl_$5;",
+            "        2'b01  : $2.lctl = hs::lctl_$6;",
+            "        2'b10  : $2.lctl = hs::lctl_$7;",
+            "        2'b11  : $2.lctl = hs::lctl_$8;",
+            "        default: $2.lctl = hs::lctl_pause;",
+                    "    endcase",
+            "end$0"
+        ]
+    },
+
+    "Handshake Follower Case": {
+        "prefix": "case",
+        "body": [
+            "wire   [1:0] $2_condition;",
+            "assign       $2_condition[0] = $3;",
+            "assign       $2_condition[1] = $4;",
+            "always_comb begin : $2_mux",
+            "    case ($2_condition)",
+            "        2'b00  : $2.fctl = hs::fctl_$5;",
+            "        2'b01  : $2.fctl = hs::fctl_$6;",
+            "        2'b10  : $2.fctl = hs::fctl_$7;",
+            "        2'b11  : $2.fctl = hs::fctl_$8;",
+            "        default: $2.fctl = hs::fctl_pause;",
+                    "    endcase",
+            "end$0"
+        ]
+    },
+
+    "State Machine": {
+        "prefix": "state",
+        "body": [
+            "typedef enum {",
+            "    IDLE,",
+            "    $1",
+            "} state_e;",
+            "",
+            "state_e state_current;",
+            "state_e state_next;",
+            "logic   update_state;",
+            "",
+            "always_comb begin : state_machine",
+            "    case (state_current)",
+            "        IDLE : begin",
+            "            state_next = ;",
+            "            update_state = ;",
+            "        end",
+            "        $0",
+            "        default : begin",
+            "            state_next = IDLE;",
+            "            update_state = 1'b1;",
+            "        end",
+            "    endcase",
+            "end",
+            "",
+            "wire state_trigger = sync_rst",
+            "                  || (clk_en && update_state);",
+            "always_ff @(posedge clk) begin",
+            "    if (state_trigger) begin",
+            "        state_current <= sync_rst",
+            "                    ? IDLE",
+            "                    : state_next;",
+            "    end",
+            "end"
+        ]
+    },
+
+    "State Machine_Internals": {
+        "prefix": "state",
+        "body": [
+            ": begin",
+            "    state_next = ;",
+            "    update_state = ;",
+            "end"
+        ]
+    },
+
+    "State Machine_Internal_Case": {
+        "prefix": "state",
+        "body": [
+            "wire   [1:0] $1_condition;",
+            "assign       $1_condition[0] = $2;",
+            "assign       $1_condition[1] = $3;",
+            "unique case ($1_condition)",
+            "    2'b00  : state_next = $4;",
+            "    2'b01  : state_next = $5;",
+            "    2'b10  : state_next = $6;",
+            "    2'b11  : state_next = $7;",
+            "endcase$0"
+        ]
+    },
+
+
+    "GenblockForLoop": {
+        "prefix": "for",
+        "body": [
+            "genvar $1;",
+            "generate",
+            "    for ($1 = 0; $1 < $2; $1 = $1 + 1) begin : $3",
+            "        $0",
+            "    end",
+            "endgenerate"
+        ]
+    },
+
+    "Decoder": {
+        "prefix": "decode",
+        "body": [
+            "logic [$1:0] $2;",
+            "always_comb begin",
+            "    $2 = 0;",
+            "    $2[$3] = 1'b1;",
+            "end$0"
+        ]
+    },
+
+    "Debug AlwaysFF": {
+        "prefix": "display",
+        "body": [
+			"always_ff @(posedge clk) begin",
+			"    \\$display(\"$1 - $2\", $3);",
+            "end$0"
+        ]
+    },
+
+    "Display": {
+        "prefix": "display",
+        "body": [
+			"\\$display(\"$1 - $2\", $3);$0"
+        ]
+    },
+
+    "Testbed Display": {
+        "prefix": "display",
+        "body": [
+			"\\$display(\"Cycle[%0d] - $1 - $2\", EnabledCycleCount, $3);$0"
+        ]
+    },
+
+    "BitReversal": {
+        "prefix": "reverse",
+        "body": [
+            "genvar $1_reversal_index;",
+            "wire [$2:0] $1_reversed;",
+            "generate",
+            "   for ($1_reversal_index = 0; $1_reversal_index < $3; $1_reversal_index = ($1_reversal_index + 1)) begin : $1BitReversal",
+            "       assign $1_reversed[$1_reversal_index] = $4[$3-$1_reversal_index-1];",
+            "   end",
+            "endgenerate$0"
+        ]
+    },
+
+    "TruthTable": {
+        "prefix": "truth",
+        "body": [         
+            "// $1 $2 $3",
+            "// 1 1 $4",
+            "// 1 0 $5",
+            "// 0 1 $6",
+            "// 0 0 $7"
+        ]
+    },
+
+    "instantiate hs_io.ldr": {
+    	"prefix": "hs",
+    	"body": [
+            "hs::lctl_s $1_lctl;",
+            "`HS_DRIVE_LDR($1_hs, $1_lctl)$0"
+    	]
+    },
+
+    "instantiate hs_io.flw": {
+    	"prefix": "hs",
+    	"body": [
+            "hs::fctl_s $1_fctl;",
+            "`HS_DRIVE_FLW($1_hs, $1_fctl)$0"
+    	]
+    },
+
+    "control hs_io.ldr": {
+    	"prefix": "hs",
+    	"body": [
+            "wire   $1_ready = $2;",
+            "assign $1_lctl.start = $1_ready;",
+            "assign $1_lctl.pause = ~$1_ready;",
+            "assign $1_lctl.close = $3;",
+            "assign $1_lctl.abort = 1'b0;$0"
+    	]
+    },
+
+    "control hs_io.flw": {
+    	"prefix": "hs",
+    	"body": [
+            "wire   $1_ready = $2;",
+            "assign $1_fctl.ready = $1_ready;",
+            "assign $1_fctl.pause = ~$1_ready;",
+            "assign $1_fctl.block = $3;$0"
+    	]
+    },
+
+    "req_ack_waiting": {
+    	"prefix": "hs",
+    	"body": [
+            "reg  $1_res_waiting_current;",
+            "wire $1_res_waiting_next = ~sync_rst && $1_req_hs.flag.exit;",
+            "wire $1_res_waiting_trigger = sync_rst",
+            "                            || (clk_en && $1_req_hs.flag.exit)",
+            "                            || (clk_en && $1_res_hs.flag.exit);",
+            "always_ff @(posedge clk) begin",
+            "    if ($1_res_waiting_trigger) begin",
+            "        $1_res_waiting_current <= $1_res_waiting_next;",
+            "    end",
+            "end$0"
+    	]
+    }
+}
+

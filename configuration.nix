@@ -103,6 +103,13 @@
     "flakes"
   ];
 
+  # Enable home-manager to build its respective
+  # home-manager.users.decapo.imports = [ ./home.nix ];
+  # home-manager.users.decapo.imports = [ ];
+
+  # Enable direnv
+  programs.direnv.enable = true;
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
