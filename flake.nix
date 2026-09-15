@@ -28,6 +28,7 @@
           {
             environment.systemPackages = with pkgs; [
               git
+              slang
               vscodium
               sublime-merge
               gtkwave
